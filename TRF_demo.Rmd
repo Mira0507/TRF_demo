@@ -15,7 +15,7 @@ output: html_document
 
 ### Conda environment
 
-#### - This analysis is used under [conda](https://conda.io/projects/conda/en/latest/index.html) environment (see the [recipe](https://github.com/Mira0507/TRF_demo/blob/master/conda_r.yml))
+#### - This analysis was performed under [conda](https://conda.io/projects/conda/en/latest/index.html) environment (see the [recipe](https://github.com/Mira0507/TRF_demo/blob/master/conda_r.yml))
 
 
 ```{r global_options, include=FALSE}
