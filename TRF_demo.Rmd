@@ -214,8 +214,11 @@ trfTable <- data.frame()
 # (The line 1 to 6 of trflines have title & description about this run)
 for (i in 7:length(trflines)) {
 
-    if (trflines[i] != "") {
+    if (trflines[i] != "" & !grepl("Parameters", trflines[i], fixed=T)) {
 
+
+
+        trflines[i] <- str_replace(trflines[i], "Sequence: ", "")
 
         df <- data.frame(Line=trflines[i])
 
@@ -223,9 +226,8 @@ for (i in 7:length(trflines)) {
 
     }
 
-
-
 }
+
 
 
 # Exploring the output data frame
@@ -237,9 +239,9 @@ class(trfTable)
 # Clean the TRF data frame 
 # (removing rows containing parameters and adding line codes)
 trfTable <- trfTable %>%
-    mutate(code=ifelse(grepl("Sequence", Line, fixed=T), "S", 
-                       ifelse(grepl("Parameters", Line, fixed=T), "P",
-                       "CDNA"))) %>% dplyr::filter(code != "P")
+    mutate(code=ifelse(grepl("ENSG", Line, fixed=T), 
+                       "ID", 
+                       "CDNA")) 
 
 
 # Exploring the output data frame
@@ -251,41 +253,34 @@ dim(trfTable)
 #
 # Creating an empty data frame 
 trfnumTable <- data.frame()
-
-# Converting the line code to a character vector
 code.vector <- trfTable$code
 
-
-# Creating empty vectors 
-GENE <- c()    
+GENE <- c()
 COUNT <- c()
 
-# Creating variables for storing counts 
-num.s <- 0
-num.c <- 0
-
+index.id <- 0
+index.cdna <- 0
 for (i in 1:nrow(trfTable)) {
 
-    # If the line code is "S" (=Sequence: gene id)
-    if (code.vector[i] == "S") {
 
-        num.s <- num.s + 1
-        num.c <- 0
+    if (code.vector[i] == "ID") {
 
-    # If the line code is "CDNA" (=Repeats) 
+        index.id <- index.id + 1
+        index.cdna <- 0
+
     } else {
 
-        num.s <- 0 
-        num.c <- num.c + 1
+        index.id <- 0
+        index.cdna <- index.cdna + 1
     }
 
-    GENE[i] <- num.s # Indicates gene id coded "S"
-    COUNT[i] <- num.c  # Indicates repetitive elements coded "CDNA" 
+
+
+    GENE[i] <- index.id # Indicates GENEID coded "ID"
+    COUNT[i] <- index.cdna  # Indicates repetitive elements coded "CDNA" 
 
 
 }
-
-
 # Exploring the GENE and Count vectors
 GENE
 COUNT
@@ -332,7 +327,7 @@ if (repetitive.last[1] < repetitive.first[1]) {
         repetitive.first[length(repetitive.first)]) {
 
         repetitive.last <- c(repetitive.last, 
-                             repetitive.first[length(repetitive.last)])
+                             repetitive.first[length(repetitive.first)])
 
     }
 
